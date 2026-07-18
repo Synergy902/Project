@@ -36,6 +36,7 @@ The view returns automatically when the missile hits, expires, is destroyed, exc
 - `gradlew build --no-problems-report`: **BUILD SUCCESSFUL**
 - Kotlin and Java compilation passed.
 - Mixin processing, resources, reobfuscation, and jar-in-jar packaging passed.
+- Runtime bytecode verification confirms that Mixin shadow fields use Forge's obfuscated production names.
 - Modified Mi-28 and localization JSON files parsed successfully.
 - The release jar was audited for the controller, HUD, camera mixin, networking messages, and Mi-28 data.
 
