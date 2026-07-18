@@ -1,0 +1,8 @@
+# Repository-level generated files
+**/.gradle/
+**/.kotlin/
+**/build/
+**/run/
+**/logs/
+**/.idea/
+**/*.iml

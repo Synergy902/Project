@@ -1,0 +1,44 @@
+name: Build TV-Guided Missile SBW
+
+on:
+  push:
+    paths:
+      - "tv-guided-missile-sbw/**"
+      - ".github/workflows/build-tv-guided-missile-sbw.yml"
+  pull_request:
+    paths:
+      - "tv-guided-missile-sbw/**"
+      - ".github/workflows/build-tv-guided-missile-sbw.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tv-guided-missile-sbw
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+          cache-dependency-path: tv-guided-missile-sbw/**/*.gradle*
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
+
+      - name: Build mod
+        run: ./gradlew build --no-daemon --no-problems-report
+
+      - name: Upload installable jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: tv-guided-missile-sbw
+          path: tv-guided-missile-sbw/build/libs/*-all.jar
+          if-no-files-found: error
