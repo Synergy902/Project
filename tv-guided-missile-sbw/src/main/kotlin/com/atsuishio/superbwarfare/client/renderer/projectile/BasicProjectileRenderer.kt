@@ -28,7 +28,7 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
         return ResourceLocation(namespace, "textures/bedrock/projectile/$id.png")
     }
 
-    fun getModelLocation(entity: T): ResourceLocation {
+    open fun getModelLocation(entity: T): ResourceLocation {
         val (_,  namespace, id) = entity.type.descriptionId.split(".")
         return ResourceLocation(namespace, "models/bedrock/projectile/$id.geo.json")
     }

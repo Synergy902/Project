@@ -262,15 +262,28 @@ object ClickEventHandler {
     fun onKeyPressed(event: InputEvent.Key) {
         if (notInGame) return
 
+        val player = localPlayer ?: return
+        val mi28 = player.vehicle as? VehicleEntity
+        val isMi28SecondaryGunner = mi28?.type == ModEntities.MI_28.get() && mi28.getSeatIndex(player) == 1
+
+        // InputEvent.Key is not cancelable. Consume the perspective click instead so
+        // F5 cannot move the gunner away from the TV-guided camera or crash the game.
+        if (isMi28SecondaryGunner
+            && event.action == GLFW.GLFW_PRESS
+            && event.key == mc.options.keyTogglePerspective.key.value
+        ) {
+            while (mc.options.keyTogglePerspective.consumeClick()) {
+                // Drain all queued perspective toggles for this key press.
+            }
+            return
+        }
+
         if (TvMissileClientHandler.isActive()) {
             if (event.action == GLFW.GLFW_PRESS && event.key == ModKeyMappings.INTERACT.key.value) {
                 TvMissileClientHandler.cancel()
             }
-            event.isCanceled = true
             return
         }
-
-        val player = localPlayer ?: return
 
         val key = event.key
         if (key < 0) return
