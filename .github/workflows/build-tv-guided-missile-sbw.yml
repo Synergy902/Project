@@ -36,6 +36,14 @@ jobs:
       - name: Build mod
         run: ./gradlew build --no-daemon --no-problems-report
 
+      - name: Verify runtime Mixin mappings
+        run: |
+          jar_path="$(find build/libs -maxdepth 1 -name '*-all.jar' -print -quit)"
+          test -n "$jar_path"
+          javap -p -classpath "$jar_path" com.atsuishio.superbwarfare.mixins.MinecraftMixin | tee build/minecraft-mixin-bytecode.txt
+          grep -q 'LocalPlayer f_91074_' build/minecraft-mixin-bytecode.txt
+          grep -q 'Options f_91066_' build/minecraft-mixin-bytecode.txt
+
       - name: Upload installable jar
         uses: actions/upload-artifact@v4
         with:

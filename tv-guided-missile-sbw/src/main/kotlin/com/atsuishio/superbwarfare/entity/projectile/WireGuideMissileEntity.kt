@@ -13,6 +13,9 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
+import net.minecraft.network.syncher.EntityDataAccessor
+import net.minecraft.network.syncher.EntityDataSerializers
+import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
@@ -23,10 +26,17 @@ open class WireGuideMissileEntity(type: EntityType<out WireGuideMissileEntity>, 
 
     var launcherVehicleUUID: UUID? = null
 
-    private var tvControlStarted = false
+    private var tvControlStarted: Boolean
+        get() = entityData.get(TV_CONTROL_ACTIVE)
+        set(value) = entityData.set(TV_CONTROL_ACTIVE, value)
     private var tvYawInput = 0f
     private var tvPitchInput = 0f
     private var lastTvInputTick = -100
+
+    override fun defineSynchedData() {
+        super.defineSynchedData()
+        entityData.define(TV_CONTROL_ACTIVE, false)
+    }
 
     override fun getDefaultItem(): Item {
         return ModItems.MEDIUM_ANTI_GROUND_MISSILE.get()
@@ -34,7 +44,12 @@ open class WireGuideMissileEntity(type: EntityType<out WireGuideMissileEntity>, 
 
     override fun tick() {
         super.tick()
-        mediumTrail()
+        // The controlling client is sitting directly on the missile, where hundreds of
+        // long-lived translucent trail particles become pure overdraw. Other clients
+        // and all normal external views retain the full trail.
+        if (!TvMissileVisualState.isLocalControlled(id)) {
+            mediumTrail()
+        }
 
         if (!isAlive) return
 
@@ -55,6 +70,11 @@ open class WireGuideMissileEntity(type: EntityType<out WireGuideMissileEntity>, 
                 }
             }
         }
+
+        // While TV guidance is active, the server owns steering. Let the client keep
+        // predicting with the latest synced velocity instead of also pulling toward
+        // the helicopter barrel and fighting the server direction every tick.
+        if (level().isClientSide && tvControlStarted) return
 
         val owner = this.owner
         val vehicle = owner?.vehicle
@@ -167,6 +187,10 @@ open class WireGuideMissileEntity(type: EntityType<out WireGuideMissileEntity>, 
         get() = 20f
 
     companion object {
+        @JvmField
+        val TV_CONTROL_ACTIVE: EntityDataAccessor<Boolean> =
+            SynchedEntityData.defineId(WireGuideMissileEntity::class.java, EntityDataSerializers.BOOLEAN)
+
         const val MI_28_GUNNER_SEAT = 1
         const val MAX_TV_CONTROL_RANGE = 1024.0
 

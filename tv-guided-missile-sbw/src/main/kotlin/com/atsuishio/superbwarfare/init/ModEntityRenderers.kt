@@ -52,7 +52,7 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.TOM_6.get(), ::Tom6Renderer)
             registerEntityRenderer(ModEntities.MELON_BOMB.get(), ::MelonBombEntityRenderer)
             registerEntityRenderer(ModEntities.BMP_2.get(), ::Bmp2Renderer)
-            registerEntityRenderer(ModEntities.WIRE_GUIDE_MISSILE.get(), ::BasicProjectileRenderer)
+            registerEntityRenderer(ModEntities.WIRE_GUIDE_MISSILE.get(), ::TvGuidedMissileRenderer)
             registerEntityRenderer(ModEntities.LASER_TOWER.get(), ::LaserTowerRenderer)
             registerEntityRenderer(ModEntities.YX_100.get(), ::Yx100Renderer)
             registerEntityRenderer(ModEntities.PRISM_TANK.get(), ::PrismTankRenderer)

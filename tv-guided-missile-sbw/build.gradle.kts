@@ -283,15 +283,6 @@ mixin {
     isQuiet = true
 }
 
-tasks.withType<JavaCompile> {
-    options.compilerArgs.addAll(
-        listOf(
-            "-Amixin.refmap=mixins.superbwarfare.refmap.json",
-            "-Amixin.defaultRefmap=mixins.superbwarfare.refmap.json"
-        )
-    )
-}
-
 tasks.named<ProcessResources>("processResources") {
     val replaceProperties = mapOf(
         "minecraft_version" to project.property("minecraft_version"),
@@ -331,6 +322,7 @@ tasks.named<Jar>("jar") {
 
 tasks.named<Jar>("jarJar") {
     from("COPYING", "COPYING.LESSER")
+    finalizedBy("reobfJarJar")
 }
 
 java {
@@ -353,5 +345,3 @@ idea {
 kotlin {
     jvmToolchain(17)
 }
-
-// 确保 Mixin AP 能在 FG6 的编译管线中正确运行

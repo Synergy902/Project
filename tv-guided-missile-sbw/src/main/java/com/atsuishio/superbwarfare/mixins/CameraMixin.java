@@ -44,7 +44,7 @@ public abstract class CameraMixin {
 
         if (player != null) {
             if (TvMissileClientHandler.isActive()) {
-                var rotation = TvMissileClientHandler.cameraRotation();
+                var rotation = TvMissileClientHandler.cameraRotation(partialTicks);
                 var position = TvMissileClientHandler.cameraPosition(partialTicks);
                 if (rotation != null && position != null) {
                     setRotation(rotation.x, rotation.y);
